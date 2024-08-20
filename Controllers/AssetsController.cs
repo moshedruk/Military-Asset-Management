@@ -139,7 +139,6 @@ namespace Military_Asset_Management_System.Controllers
             {
                 return BadRequest("Weapon data is null");
             }
-
             Weapons.Add(newWeapons);
             return CreatedAtAction("GetById", new { id = newWeapons.Id, type = "weapon" });
         }
