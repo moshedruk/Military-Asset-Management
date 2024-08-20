@@ -34,7 +34,9 @@ namespace Military_Asset_Management_System.Connect
         }
        
         public DbSet<Vehicle> _Vehicles { get; set; }
-        
+        public DbSet<Personnel> _Personnels { get; set; }
+        public DbSet<Weapon> _Weapons { get; set; }
+
     }
 }
 
