@@ -1,5 +1,7 @@
 ﻿using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
+using Military_Asset_Management_System.Connect;
 using Military_Asset_Management_System.Military_modles;
 
 namespace Military_Asset_Management_System.Controllers
@@ -8,6 +10,11 @@ namespace Military_Asset_Management_System.Controllers
     [ApiController]
     public class AssetsController : ControllerBase
     {
+        private readonly connectDB _DBcontext;
+        public AssetsController(connectDB DBcontext)
+        {
+            this._DBcontext = DBcontext;
+        }
         //private static List<Vehicle> _vehicles = new List<Vehicle>();
         //private static List<Vehicle> _weapons = new List<Vehicle>();
         //private static List<Vehicle> _personnel = new List<Vehicle>();
@@ -124,13 +131,32 @@ namespace Military_Asset_Management_System.Controllers
             }
         }
         [HttpPost("vehicle")]
-        public ActionResult<Vehicle> CreateVehicle([FromBody] Vehicle newVehicle)
+        public async Task <IActionResult> CreateVehicle([FromBody] Vehicle newVehicle)
         {
-            if (newVehicle == null)
+            if (newVehicle == null) 
+            {
                 return BadRequest("Vehicle data is null");
+            }
 
-            Vehicles.Add(newVehicle);
-            return CreatedAtAction(nameof(GetById), new { id = newVehicle.Id, type = "vehicle" }, newVehicle);
+            await _DBcontext._Vehicles.AddAsync(newVehicle);
+            
+            _DBcontext.SaveChangesAsync();
+            //return _DBcontext._Vehicles.ToList();
+            return Ok();
+
+            //Vehicles.Add(newVehicle);
+            //return CreatedAtAction(nameof(GetById), new { id = newVehicle.Id, type = "vehicle" }, newVehicle);
+        }
+        [HttpGet("vehicle")]
+        public async Task<IActionResult> GetVehicle()
+        {
+            var res = await _DBcontext._Vehicles.ToListAsync();
+
+            //return _DBcontext._Vehicles.ToList();
+            return Ok(res);
+
+            //Vehicles.Add(newVehicle);
+            //return CreatedAtAction(nameof(GetById), new { id = newVehicle.Id, type = "vehicle" }, newVehicle);
         }
         [HttpPost("weapon")]
         public ActionResult<Weapon> CreatWeapons([FromBody] Weapon newWeapons)
